@@ -18,18 +18,13 @@ jobs:
       - name: Publish image to Docker Hub
         run: docker push ahmedbhai/host-app:latest
 
-  deploy:
+  deploy: 
     needs: build
-    runs-on: aws-ec2
+    runs-on: aws-ec2    
     steps:
-      - name: Install Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo usermod -aG docker $USER
-          newgrp docker
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get install -y docker-compose
-      - name: Pull and run Docker container using Docker Compose
-        run: docker-compose up -d
+      - name: Pull image from docker hub
+        run: sudo docker pull ahmedbhai/host-app:latest 
+      - name: Delete Old Container
+        run: sudo docker rm -f reactContainer
+      - name: Run docker container
+        run: sudo docker run -d -p 3000:80 --name reactContainer ahmedbhai/host-app
